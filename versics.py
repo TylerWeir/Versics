@@ -45,8 +45,8 @@ class Versics(pygame.sprite.Sprite):
     def satisfy_contraints(self):
         # Kepps the points inside a box
         for point in self.points:
-            point.x = min(max(point.x, 0), 1000)
-            point.y = min(max(point.y, 0), 1000)
+            point.x = min(max(point.x, 0), 900)
+            point.y = min(max(point.y, 0), 900)
 
         # Keeps the points a distance apart
 
@@ -65,9 +65,9 @@ clock = pygame.time.Clock()
 
 
 # Set up the physics objects
-points = [(50, 50), (100, 100)]
-old_points = [(51, 51), (99, 99)]
-forces = (Vector2(0, 10), Vector2(0, -10))
+points = [(30, 500), (700, 100)]
+old_points = [(29, 510), (697, 101)]
+forces = (Vector2(0, 500), Vector2(0, 500))
 
 balls = Versics(points, old_points, forces)
 
@@ -103,7 +103,6 @@ while running:
 
     for ball in balls.points:
         point = (ball.x, ball.y)
-        print(point)
         render_ball(point)
 
     pygame.display.flip()
