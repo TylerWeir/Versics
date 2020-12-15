@@ -44,7 +44,9 @@ class Versics(pygame.sprite.Sprite):
     #        force = Vector2(self.gravity)
 
     def satisfy_contraints(self):
-        bounce = 0.90
+        # 1 = perfectly elastic collision
+        # 0 = perfectly inelastic collision
+        bounce = 0.9
 
         for j in range(1):
             # Keeps the points inside a box
@@ -54,6 +56,10 @@ class Versics(pygame.sprite.Sprite):
             # Keeps the points a distance apart
 
             for i in range(len(self.points)):
+                # Make bounces by reflecting the velocity at time of impact
+                # accross the wall. velocity is current pos - old pos.
+                # Velocity must be stored before the current point is adjusted
+                # to the wall boundry or else there is unintentional damping.
 
                 # x bounce
                 if self.points[i].x >= 900:
