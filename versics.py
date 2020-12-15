@@ -82,13 +82,13 @@ class Versics(pygame.sprite.Sprite):
                     self.old_points[i].y = self.points[i].y+diff*bounce
 
                 for stick in self.sticks:
-                    x1 = Vector2(self.points[0])
-                    x2 = Vector2(self.points[1])
+                    x1 = Vector2(self.points[stick[0]])
+                    x2 = Vector2(self.points[stick[1]])
                     delta = x2-x1
                     delta_length = delta.length()
                     diff = (delta_length-100)/delta_length
-                    self.points[0] += delta*0.5*diff
-                    self.points[1] -= delta*0.5*diff
+                    self.points[stick[0]] += delta*0.5*diff
+                    self.points[stick[1]] -= delta*0.5*diff
 
 
 # Test program
@@ -105,15 +105,15 @@ clock = pygame.time.Clock()
 
 
 # Set up the physics objects
-points = [(30, 500), (30, 400), (50, 600)]
-old_points = [(25, 510), (20, 410), (40, 610)]
+points = [(30, 100), (30, 200), (30, 300)]
+old_points = [(22, 110), (20,210), (20, 310)]
 forces = (Vector2(0, 980), Vector2(0, 980), Vector2(0, 980))
-sticks = [(0, 1)]
+sticks = [(0, 1), (1, 2)]
 
 balls = Versics(points, old_points, forces, sticks)
 
 
-def render_ball(point):
+def render_ball(ball):
     # Create a surface that will represent the ball
     ballSurf = pygame.Surface((8, 8))
 
@@ -121,7 +121,25 @@ def render_ball(point):
     ballSurf.fill((255, 0, 255))
     ballSurf.set_colorkey((255, 0, 255))
     pygame.draw.circle(ballSurf, (255, 255, 255), (4, 4), 4)
-    screen.blit(ballSurf, point)
+    screen.blit(ballSurf, (ball.x-4, ball.y-4))
+
+def render_stick(stick):
+    pt1 = balls.points[stick[0]]
+    pt2 = balls.points[stick[1]]
+
+    # Find the dimensions of the Surface
+    # dx = abs(pt1.x-pt2.x)
+    # dy = abs(pt1.y-pt2.y)
+
+    # Make the surface
+    stickSurf = pygame.Surface((1000, 1000))
+    stickSurf.fill((255, 0, 255))
+    stickSurf.set_colorkey((255, 0, 255))
+    pygame.draw.line(stickSurf, (255, 255, 255), pt1, pt2)
+    screen.blit(stickSurf, (0, 0))
+
+    # blite the line onto the Surface
+
 
 
 running = True
@@ -143,8 +161,10 @@ while running:
     balls.timeStep()
 
     for ball in balls.points:
-        point = (ball.x, ball.y)
-        render_ball(point)
+        render_ball(ball)
+
+    for stick in balls.sticks:
+        render_stick(stick)
 
     pygame.display.flip()
     clock.tick(60)
