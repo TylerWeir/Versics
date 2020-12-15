@@ -105,8 +105,8 @@ clock = pygame.time.Clock()
 
 
 # Set up the physics objects
-points = [(30, 100), (30, 200), (30, 300)]
-old_points = [(22, 110), (20,210), (20, 310)]
+points = [(330, 200), (330, 300), (330, 400)]
+old_points = [(340, 210), (330, 310), (320, 410)]
 forces = (Vector2(0, 980), Vector2(0, 980), Vector2(0, 980))
 sticks = [(0, 1), (1, 2)]
 
