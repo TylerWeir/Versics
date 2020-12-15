@@ -44,21 +44,46 @@ class Versics(pygame.sprite.Sprite):
     #        force = Vector2(self.gravity)
 
     def satisfy_contraints(self):
-        for j in range(2):
-            # Keeps the points inside a box
-            for point in self.points:
-                point.x = min(max(point.x, 0), 900)
-                point.y = min(max(point.y, 0), 900)
+        bounce = 0.90
 
+        for j in range(1):
+            # Keeps the points inside a box
+            # for point in self.points:
+            #    point.x = min(max(point.x, 0), 900)
+            #    point.y = min(max(point.y, 0), 900)
             # Keeps the points a distance apart
-            for stick in self.sticks:
-                x1 = Vector2(self.points[0])
-                x2 = Vector2(self.points[1])
-                delta = x2-x1
-                delta_length = delta.length()
-                diff = (delta_length-100)/delta_length
-                self.points[0] += delta*0.5*diff
-                self.points[1] -= delta*0.5*diff
+
+            for i in range(len(self.points)):
+
+                # x bounce
+                if self.points[i].x >= 900:
+                    diff = self.points[i].x - self.old_points[i].x
+                    self.points[i].x = 900
+                    self.old_points[i].x = self.points[i].x+diff*bounce
+                if self.points[i].x <= 0:
+                    diff = self.points[i].x - self.old_points[i].x
+                    self.points[i].x = 0
+                    self.old_points[i].x = self.points[i].x + diff*bounce
+
+                # y bounces
+                if self.points[i].y >= 900:
+                    diff = self.points[i].y - self.old_points[i].y
+                    self.points[i].y = 900
+                    self.old_points[i].y = self.points[i].y+diff*bounce
+                if self.points[i].y <= 0:
+                    diff = self.points[i].y - self.old_points[i].y
+                    self.points[i].y = 0
+                    self.old_points[i].y = self.points[i].y+diff*bounce
+
+                for stick in self.sticks:
+                    x1 = Vector2(self.points[0])
+                    x2 = Vector2(self.points[1])
+                    delta = x2-x1
+                    delta_length = delta.length()
+                    diff = (delta_length-100)/delta_length
+                    self.points[0] += delta*0.5*diff
+                    self.points[1] -= delta*0.5*diff
+
 
 # Test program
 pygame.init()
@@ -74,10 +99,10 @@ clock = pygame.time.Clock()
 
 
 # Set up the physics objects
-points = [(30, 500), (30, 400)]
-old_points = [(25, 510), (20, 410)]
-forces = (Vector2(0, 500), Vector2(0, 500))
-sticks = [(0,1)]
+points = [(30, 500), (30, 400), (50, 600)]
+old_points = [(25, 510), (20, 410), (40, 610)]
+forces = (Vector2(0, 980), Vector2(0, 980), Vector2(0, 980))
+sticks = [(0, 1)]
 
 balls = Versics(points, old_points, forces, sticks)
 
