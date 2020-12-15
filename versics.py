@@ -7,11 +7,12 @@ from pygame.math import Vector2
 class Versics(pygame.sprite.Sprite):
     """Class used to give physics to models with structure."""
 
-    def __init__(self, points, old_points, forces):
+    def __init__(self, points, old_points, forces, sticks):
         # Lists to contain all the points in the system.
         self.points = []
         self.old_points = []
         self.forces = []
+        self.sticks = sticks
 
         self.gravity = Vector2((0, 5.0))
         self.time_step = 1/60
@@ -43,13 +44,21 @@ class Versics(pygame.sprite.Sprite):
     #        force = Vector2(self.gravity)
 
     def satisfy_contraints(self):
-        # Kepps the points inside a box
-        for point in self.points:
-            point.x = min(max(point.x, 0), 900)
-            point.y = min(max(point.y, 0), 900)
+        for j in range(2):
+            # Keeps the points inside a box
+            for point in self.points:
+                point.x = min(max(point.x, 0), 900)
+                point.y = min(max(point.y, 0), 900)
 
-        # Keeps the points a distance apart
-
+            # Keeps the points a distance apart
+            for stick in self.sticks:
+                x1 = Vector2(self.points[0])
+                x2 = Vector2(self.points[1])
+                delta = x2-x1
+                delta_length = delta.length()
+                diff = (delta_length-100)/delta_length
+                self.points[0] += delta*0.5*diff
+                self.points[1] -= delta*0.5*diff
 
 # Test program
 pygame.init()
@@ -65,11 +74,12 @@ clock = pygame.time.Clock()
 
 
 # Set up the physics objects
-points = [(30, 500), (700, 100)]
-old_points = [(29, 510), (697, 101)]
+points = [(30, 500), (30, 400)]
+old_points = [(25, 510), (20, 410)]
 forces = (Vector2(0, 500), Vector2(0, 500))
+sticks = [(0,1)]
 
-balls = Versics(points, old_points, forces)
+balls = Versics(points, old_points, forces, sticks)
 
 
 def render_ball(point):
