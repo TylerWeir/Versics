@@ -104,11 +104,10 @@ background.fill((0, 0, 0))
 # Clock to limit frame rate
 clock = pygame.time.Clock()
 
-
 # Set up the physics objects
 points = [(330, 200), (330, 300), (330, 400)]
 old_points = [(340, 210), (330, 310), (320, 410)]
-forces = (Vector2(0, 980), Vector2(0, 980), Vector2(0, 980))
+forces = ((0, 980), (0, 980), (0, 980))
 sticks = [(0, 1), (1, 2)]
 
 balls = Versics(points, old_points, forces, sticks)
@@ -133,14 +132,12 @@ def render_stick(stick):
     # dx = abs(pt1.x-pt2.x)
     # dy = abs(pt1.y-pt2.y)
 
-    # Make the surface
+    # Make the surface and blit to screen
     stickSurf = pygame.Surface((1000, 1000))
     stickSurf.fill((255, 0, 255))
     stickSurf.set_colorkey((255, 0, 255))
     pygame.draw.line(stickSurf, (255, 255, 255), pt1, pt2)
     screen.blit(stickSurf, (0, 0))
-
-    # blite the line onto the Surface
 
 
 running = True
@@ -159,13 +156,18 @@ while running:
     # Paint the background
     screen.blit(background, (0, 0))
 
+    # update the balls
     balls.timeStep()
 
+    # draw the balls
     for ball in balls.points:
         render_ball(ball)
 
+    # draw the sticks
     for stick in balls.sticks:
         render_stick(stick)
 
     pygame.display.flip()
     clock.tick(60)
+
+pygame.QUIT
