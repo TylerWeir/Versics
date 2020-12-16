@@ -9,19 +9,20 @@ class Versics(pygame.sprite.Sprite):
 
     def __init__(self, points, old_points, forces, sticks):
         # Lists to contain all the points in the system.
-        self.points = []
-        self.old_points = []
-        self.forces = []
-        self.sticks = sticks
+        self.points = [Vector2(a, b) for (a, b) in points]
+        self.old_points = [Vector2(a, b) for (a, b) in old_points]
+        self.forces = [Vector2(a, b) for (a, b) in forces]
+        self.sticks = [(a, b, self.points[a].distance_to(self.points[b]))
+                       for (a, b) in sticks]
 
         self.gravity = Vector2((0, 5.0))
         self.time_step = 1/60
 
-        # Fill in the lists
+        """# Fill in the lists
         for i in range(len(points)):
             self.points.append(Vector2(points[i]))
             self.old_points.append(Vector2(old_points[i]))
-            self.forces.append(Vector2(forces[i]))
+            self.forces.append(Vector2(forces[i]))"""
 
     def timeStep(self):
         self.accumulate_forces()
@@ -86,7 +87,7 @@ class Versics(pygame.sprite.Sprite):
                     x2 = Vector2(self.points[stick[1]])
                     delta = x2-x1
                     delta_length = delta.length()
-                    diff = (delta_length-100)/delta_length
+                    diff = (delta_length-stick[2])/delta_length
                     self.points[stick[0]] += delta*0.5*diff
                     self.points[stick[1]] -= delta*0.5*diff
 
@@ -123,6 +124,7 @@ def render_ball(ball):
     pygame.draw.circle(ballSurf, (255, 255, 255), (4, 4), 4)
     screen.blit(ballSurf, (ball.x-4, ball.y-4))
 
+
 def render_stick(stick):
     pt1 = balls.points[stick[0]]
     pt2 = balls.points[stick[1]]
@@ -139,7 +141,6 @@ def render_stick(stick):
     screen.blit(stickSurf, (0, 0))
 
     # blite the line onto the Surface
-
 
 
 running = True
