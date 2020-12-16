@@ -82,6 +82,7 @@ class Versics(pygame.sprite.Sprite):
                     self.points[i].y = 0
                     self.old_points[i].y = self.points[i].y+diff*bounce
 
+                # Stick contstraint
                 for stick in self.sticks:
                     x1 = Vector2(self.points[stick[0]])
                     x2 = Vector2(self.points[stick[1]])
@@ -105,10 +106,12 @@ background.fill((0, 0, 0))
 clock = pygame.time.Clock()
 
 # Set up the physics objects
-points = [(330, 200), (330, 300), (330, 400)]
-old_points = [(340, 210), (330, 310), (320, 410)]
-forces = ((0, 980), (0, 980), (0, 980))
-sticks = [(0, 1), (1, 2)]
+points = [(330, 200), (330, 300), (330, 400), (100, 100), (100, 150),
+          (135, 125)]
+old_points = [(335, 210), (330, 310), (325, 410), (85, 100), (85, 150),
+              (120, 125)]
+forces = ((0, 980), (0, 980), (0, 980), (0, 980), (0, 980), (0, 980))
+sticks = [(0, 1), (1, 2), (3, 4), (4, 5), (5, 3)]
 
 balls = Versics(points, old_points, forces, sticks)
 
