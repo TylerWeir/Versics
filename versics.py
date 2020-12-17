@@ -1,5 +1,11 @@
-# These classes form a basic 2D physics engine to be used with pygame based
-# programs.
+# This class is a verlet integration based physics engine. Each instance of
+# the engine takes in points, their old positions, the force they are subject
+# to, the binds between points, and the indecies of any point positions to lock.
+#
+# Creator: Tyler Weir
+# Date:
+# Version: In developement
+
 import pygame
 from pygame.math import Vector2
 
@@ -7,22 +13,17 @@ from pygame.math import Vector2
 class Versics(pygame.sprite.Sprite):
     """Class used to give physics to models with structure."""
 
-    def __init__(self, points, old_points, forces, sticks):
+    def __init__(self, points, old_points, forces, sticks, locked_points=[]):
         # Lists to contain all the points in the system.
         self.points = [Vector2(a, b) for (a, b) in points]
         self.old_points = [Vector2(a, b) for (a, b) in old_points]
         self.forces = [Vector2(a, b) for (a, b) in forces]
         self.sticks = [(a, b, self.points[a].distance_to(self.points[b]))
                        for (a, b) in sticks]
+        self.locked_points=locked_points
 
         self.gravity = Vector2((0, 5.0))
         self.time_step = 1/60
-
-        """# Fill in the lists
-        for i in range(len(points)):
-            self.points.append(Vector2(points[i]))
-            self.old_points.append(Vector2(old_points[i]))
-            self.forces.append(Vector2(forces[i]))"""
 
     def timeStep(self):
         self.accumulate_forces()
@@ -32,12 +33,15 @@ class Versics(pygame.sprite.Sprite):
     def verlet(self):
         """Verlet integration step."""
         for i in range(len(self.points)):
-            temp = Vector2(self.points[i])
-            old_pos = Vector2(self.old_points[i])
-            a = Vector2(self.forces[i])
 
-            self.points[i] += temp - old_pos + a*(self.time_step**2)
-            self.old_points[i].update(temp)
+            if i not in self.locked_points:
+                temp = Vector2(self.points[i])
+                old_pos = Vector2(self.old_points[i])
+                a = Vector2(self.forces[i])
+
+                self.points[i] += temp - old_pos + a*(self.time_step**2)
+                self.old_points[i].update(temp)
+
 
     def accumulate_forces(self):
         """Accumulates forces for each particle."""
@@ -49,13 +53,8 @@ class Versics(pygame.sprite.Sprite):
         # 0 = perfectly inelastic collision
         bounce = 0.9
 
+        # Number of iterations to satisfy contraints
         for j in range(1):
-            # Keeps the points inside a box
-            # for point in self.points:
-            #    point.x = min(max(point.x, 0), 900)
-            #    point.y = min(max(point.y, 0), 900)
-            # Keeps the points a distance apart
-
             for i in range(len(self.points)):
                 # Make bounces by reflecting the velocity at time of impact
                 # accross the wall. velocity is current pos - old pos.
@@ -89,11 +88,14 @@ class Versics(pygame.sprite.Sprite):
                     delta = x2-x1
                     delta_length = delta.length()
                     diff = (delta_length-stick[2])/delta_length
-                    self.points[stick[0]] += delta*0.5*diff
-                    self.points[stick[1]] -= delta*0.5*diff
+
+                    if stick[0] not in self.locked_points:
+                        self.points[stick[0]] += delta*0.5*diff
+                    if stick[1] not in self.locked_points:
+                        self.points[stick[1]] -= delta*0.5*diff
 
 
-# Test program
+# Test program ########################################################
 pygame.init()
 
 # Screen setup
@@ -106,14 +108,16 @@ background.fill((0, 0, 0))
 clock = pygame.time.Clock()
 
 # Set up the physics objects
-points = [(330, 200), (330, 300), (330, 400), (100, 100), (100, 150),
-          (135, 125)]
-old_points = [(335, 210), (330, 310), (325, 410), (85, 100), (85, 150),
-              (120, 125)]
-forces = ((0, 980), (0, 980), (0, 980), (0, 980), (0, 980), (0, 980))
-sticks = [(0, 1), (1, 2), (3, 4), (4, 5), (5, 3)]
-
-balls = Versics(points, old_points, forces, sticks)
+points = [(500, 50), (530, 50), (560, 50), (590, 50), (620, 50), (650, 50),
+          (680, 50), (710, 50), (740, 50), (770, 50), (830, 20), (830, 70)]
+old_points = [(500, 50), (530, 50), (560, 50), (590, 50), (620, 50), (650, 50),
+              (680, 50), (710, 50), (740, 50), (770, 50), (830, 20), (830, 70)]
+forces = [(0, 980), (0, 980), (0, 980), (0, 980), (0, 980), (0, 980), (0, 980),
+          (0, 980), (0, 980), (0, 980), (0, 980), (0, 980)]
+sticks = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
+          (8, 9), (9, 10), (10, 11), (11, 9)]
+locked_points = [0]
+balls = Versics(points, old_points, forces, sticks, locked_points)
 
 
 def render_ball(ball):
