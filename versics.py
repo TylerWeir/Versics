@@ -6,6 +6,7 @@
 # Date:
 # Version: In developement
 
+
 import pygame
 from pygame.math import Vector2
 
@@ -98,7 +99,7 @@ class Versics(pygame.sprite.Sprite):
         # Surface to do all the drawing to
         canvas = pygame.Surface(self.bounds)
         canvas.fill((255, 0, 255))
-        canvas.set_colorkey((225, 0, 255))
+        canvas.set_colorkey((255, 0, 255))
 
         # Draw in the points
         for point in self.points:
@@ -129,9 +130,11 @@ clock = pygame.time.Clock()
 
 # Set up the physics objects
 points = [(450, 50), (480, 50), (510, 50), (540, 50), (570, 50), (600, 50),
-          (630, 50), (660, 50), (690, 50), (720, 50), (750, 30), (750, 70)]
+          (630, 50), (660, 50), (690, 50), (720, 50), (750, 30), (750, 70),
+          (790, 30), (790, 70)]
 sticks = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
-          (8, 9), (9, 10), (10, 11), (11, 9)]
+          (8, 9), (9, 10), (10, 11), (11, 9), (11, 13), (10, 12), (12, 13),
+          (10, 13)]
 locked_points = [0]
 swing = Versics((900, 900), points, points, sticks, locked_points)
 
