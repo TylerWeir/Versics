@@ -13,14 +13,15 @@ from pygame.math import Vector2
 class Versics(pygame.sprite.Sprite):
     """Class used to give physics to models with structure."""
 
-    def __init__(self, points, old_points, forces, sticks, locked_points=[]):
+    def __init__(self, bounds, points, old_points, sticks, locked_points=[]):
+        self.bounds = Vector2(bounds)
+
         # Lists to contain all the points in the system.
         self.points = [Vector2(a, b) for (a, b) in points]
         self.old_points = [Vector2(a, b) for (a, b) in old_points]
-        self.forces = [Vector2(a, b) for (a, b) in forces]
         self.sticks = [(a, b, self.points[a].distance_to(self.points[b]))
                        for (a, b) in sticks]
-        self.locked_points=locked_points
+        self.locked_points = locked_points
 
         self.gravity = Vector2((0, 5.0))
         self.time_step = 1/60
@@ -37,11 +38,10 @@ class Versics(pygame.sprite.Sprite):
             if i not in self.locked_points:
                 temp = Vector2(self.points[i])
                 old_pos = Vector2(self.old_points[i])
-                a = Vector2(self.forces[i])
+                a = Vector2(0, 980)
 
                 self.points[i] += temp - old_pos + a*(self.time_step**2)
                 self.old_points[i].update(temp)
-
 
     def accumulate_forces(self):
         """Accumulates forces for each particle."""
@@ -62,9 +62,9 @@ class Versics(pygame.sprite.Sprite):
                 # to the wall boundry or else there is unintentional damping.
 
                 # x bounce
-                if self.points[i].x >= 900:
+                if self.points[i].x >= self.bounds.x:
                     diff = self.points[i].x - self.old_points[i].x
-                    self.points[i].x = 900
+                    self.points[i].x = self.bounds.x
                     self.old_points[i].x = self.points[i].x+diff*bounce
                 if self.points[i].x <= 0:
                     diff = self.points[i].x - self.old_points[i].x
@@ -72,9 +72,9 @@ class Versics(pygame.sprite.Sprite):
                     self.old_points[i].x = self.points[i].x + diff*bounce
 
                 # y bounces
-                if self.points[i].y >= 900:
+                if self.points[i].y >= self.bounds.y:
                     diff = self.points[i].y - self.old_points[i].y
-                    self.points[i].y = 900
+                    self.points[i].y = self.bounds.y
                     self.old_points[i].y = self.points[i].y+diff*bounce
                 if self.points[i].y <= 0:
                     diff = self.points[i].y - self.old_points[i].y
@@ -94,6 +94,26 @@ class Versics(pygame.sprite.Sprite):
                     if stick[1] not in self.locked_points:
                         self.points[stick[1]] -= delta*0.5*diff
 
+    def render(self):
+        # Surface to do all the drawing to
+        canvas = pygame.Surface(self.bounds)
+        canvas.fill((255, 0, 255))
+        canvas.set_colorkey((225, 0, 255))
+
+        # Draw in the points
+        for point in self.points:
+            pygame.draw.circle(canvas, (255, 255, 255), point, 4)
+
+        # draw in the sticks
+        for stick in self.sticks:
+            # End points of the stick
+            pt1 = self.points[stick[0]]
+            pt2 = self.points[stick[1]]
+
+            pygame.draw.line(canvas, (255, 255, 255), pt1, pt2)
+
+        return canvas
+
 
 # Test program ########################################################
 pygame.init()
@@ -108,43 +128,12 @@ background.fill((0, 0, 0))
 clock = pygame.time.Clock()
 
 # Set up the physics objects
-points = [(500, 50), (530, 50), (560, 50), (590, 50), (620, 50), (650, 50),
-          (680, 50), (710, 50), (740, 50), (770, 50), (830, 20), (830, 70)]
-old_points = [(500, 50), (530, 50), (560, 50), (590, 50), (620, 50), (650, 50),
-              (680, 50), (710, 50), (740, 50), (770, 50), (830, 20), (830, 70)]
-forces = [(0, 980), (0, 980), (0, 980), (0, 980), (0, 980), (0, 980), (0, 980),
-          (0, 980), (0, 980), (0, 980), (0, 980), (0, 980)]
+points = [(450, 50), (480, 50), (510, 50), (540, 50), (570, 50), (600, 50),
+          (630, 50), (660, 50), (690, 50), (720, 50), (750, 30), (750, 70)]
 sticks = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
           (8, 9), (9, 10), (10, 11), (11, 9)]
 locked_points = [0]
-balls = Versics(points, old_points, forces, sticks, locked_points)
-
-
-def render_ball(ball):
-    # Create a surface that will represent the ball
-    ballSurf = pygame.Surface((8, 8))
-
-    # blite the circle onto the Surface
-    ballSurf.fill((255, 0, 255))
-    ballSurf.set_colorkey((255, 0, 255))
-    pygame.draw.circle(ballSurf, (255, 255, 255), (4, 4), 4)
-    screen.blit(ballSurf, (ball.x-4, ball.y-4))
-
-
-def render_stick(stick):
-    pt1 = balls.points[stick[0]]
-    pt2 = balls.points[stick[1]]
-
-    # Find the dimensions of the Surface
-    # dx = abs(pt1.x-pt2.x)
-    # dy = abs(pt1.y-pt2.y)
-
-    # Make the surface and blit to screen
-    stickSurf = pygame.Surface((1000, 1000))
-    stickSurf.fill((255, 0, 255))
-    stickSurf.set_colorkey((255, 0, 255))
-    pygame.draw.line(stickSurf, (255, 255, 255), pt1, pt2)
-    screen.blit(stickSurf, (0, 0))
+swing = Versics((900, 900), points, points, sticks, locked_points)
 
 
 running = True
@@ -164,15 +153,9 @@ while running:
     screen.blit(background, (0, 0))
 
     # update the balls
-    balls.timeStep()
+    swing.timeStep()
 
-    # draw the balls
-    for ball in balls.points:
-        render_ball(ball)
-
-    # draw the sticks
-    for stick in balls.sticks:
-        render_stick(stick)
+    screen.blit(swing.render(), (50, 50))
 
     pygame.display.flip()
     clock.tick(60)
