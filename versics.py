@@ -3,7 +3,7 @@
 # to, the binds between points, and the indecies of any point positions to lock.
 #
 # Creator: Tyler Weir
-# Date:
+# Began: December 2020
 # Version: In developement
 
 
@@ -11,11 +11,41 @@ import pygame
 from pygame.math import Vector2
 
 
-class Versics(pygame.sprite.Sprite):
-    """Class used to give physics to models with structure."""
+class Environment():
+    """Represents the environment in which rigid body physics is simulated."""
 
-    def __init__(self, bounds, points, old_points, sticks, locked_points=[]):
-        self.bounds = Vector2(bounds)
+    def __init__(self, size, entities):
+        self.size = Vector2(size)
+        self.entities = entities
+        self.dt = 1/60
+
+    def add_entity(self, entity):
+        """Adds a body to the simulation."""
+        self.entities.append(entity)
+
+    def time_step(self):
+        for entity in self.entities:
+            entity.verlet(self.dt)
+            entity.satisfy_contraints(self.size)
+
+    def render(self):
+        """Renders the environment and it's entities to the screen."""
+        #Surface to do all the drawing to
+        canvas = pygame.Surface(self.size)
+        canvas.fill((0, 0, 0))
+
+        # Draw in the entities
+        for entity in self.entities:
+            # Draw the entity onto the environment's surface
+            canvas.blit(entity.render(), (0,0))
+
+        return canvas
+
+
+class Entity():
+    """Represents a rigid body structure and it's constraints"""
+
+    def __init__(self, points, old_points, sticks, locked_points=[]):
 
         # Lists to contain all the points in the system.
         self.points = [Vector2(a, b) for (a, b) in points]
@@ -24,15 +54,10 @@ class Versics(pygame.sprite.Sprite):
                        for (a, b) in sticks]
         self.locked_points = locked_points
 
-        self.gravity = Vector2((0, 5.0))
-        self.time_step = 1/60
+        self.gravity = Vector2((0, 5.0))  # Should be an environmental force
 
-    def timeStep(self):
-        self.accumulate_forces()
-        self.verlet()
-        self.satisfy_contraints()
 
-    def verlet(self):
+    def verlet(self, time_step):
         """Verlet integration step."""
         for i in range(len(self.points)):
 
@@ -41,7 +66,7 @@ class Versics(pygame.sprite.Sprite):
                 old_pos = Vector2(self.old_points[i])
                 a = Vector2(0, 980)
 
-                self.points[i] += temp - old_pos + a*(self.time_step**2)
+                self.points[i] += temp - old_pos + a*(time_step**2)
                 self.old_points[i].update(temp)
 
     def accumulate_forces(self):
@@ -49,7 +74,7 @@ class Versics(pygame.sprite.Sprite):
     #    for force in self.forces:
     #        force = Vector2(self.gravity)
 
-    def satisfy_contraints(self):
+    def satisfy_contraints(self, bounds):
         # 1 = perfectly elastic collision
         # 0 = perfectly inelastic collision
         bounce = 0.9
@@ -63,9 +88,9 @@ class Versics(pygame.sprite.Sprite):
                 # to the wall boundry or else there is unintentional damping.
 
                 # x bounce
-                if self.points[i].x >= self.bounds.x:
+                if self.points[i].x >= bounds.x:
                     diff = self.points[i].x - self.old_points[i].x
-                    self.points[i].x = self.bounds.x
+                    self.points[i].x = bounds.x
                     self.old_points[i].x = self.points[i].x+diff*bounce
                 if self.points[i].x <= 0:
                     diff = self.points[i].x - self.old_points[i].x
@@ -73,9 +98,9 @@ class Versics(pygame.sprite.Sprite):
                     self.old_points[i].x = self.points[i].x + diff*bounce
 
                 # y bounces
-                if self.points[i].y >= self.bounds.y:
+                if self.points[i].y >= bounds.y:
                     diff = self.points[i].y - self.old_points[i].y
-                    self.points[i].y = self.bounds.y
+                    self.points[i].y = bounds.y
                     self.old_points[i].y = self.points[i].y+diff*bounce
                 if self.points[i].y <= 0:
                     diff = self.points[i].y - self.old_points[i].y
@@ -97,7 +122,10 @@ class Versics(pygame.sprite.Sprite):
 
     def render(self):
         # Surface to do all the drawing to
-        canvas = pygame.Surface(self.bounds)
+        # TODO: Figure out way to more efficiently render the entity
+        # onto the environment's canvas. Currently makes a giant transparent
+        # surface that is blited onto the environment surface at (0, 0).
+        canvas = pygame.Surface((900, 900)) # Makes giant surface
         canvas.fill((255, 0, 255))
         canvas.set_colorkey((255, 0, 255))
 
@@ -128,7 +156,7 @@ background.fill((0, 0, 0))
 # Clock to limit frame rate
 clock = pygame.time.Clock()
 
-# Set up the physics objects
+# Set up the swing Entity
 points = [(450, 50), (480, 50), (510, 50), (540, 50), (570, 50), (600, 50),
           (630, 50), (660, 50), (690, 50), (720, 50), (750, 30), (750, 70),
           (790, 30), (790, 70)]
@@ -136,8 +164,10 @@ sticks = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
           (8, 9), (9, 10), (10, 11), (11, 9), (11, 13), (10, 12), (12, 13),
           (10, 13)]
 locked_points = [0]
-swing = Versics((900, 900), points, points, sticks, locked_points)
+swing = Entity(points, points, sticks, locked_points)
 
+# Set up the Environment
+my_environment = Environment((900, 900), [swing])
 
 running = True
 while running:
@@ -155,10 +185,11 @@ while running:
     # Paint the background
     screen.blit(background, (0, 0))
 
-    # update the balls
-    swing.timeStep()
+    # update the environment
+    my_environment.time_step()
 
-    screen.blit(swing.render(), (50, 50))
+    # draw the environment
+    screen.blit(my_environment.render(), (50, 50))
 
     pygame.display.flip()
     clock.tick(60)
