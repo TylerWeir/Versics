@@ -77,7 +77,7 @@ class Entity():
     def satisfy_contraints(self, bounds):
         # 1 = perfectly elastic collision
         # 0 = perfectly inelastic collision
-        bounce = 0.9
+        bounce = 0.1
 
         # Number of iterations to satisfy contraints
         for j in range(1):
@@ -166,8 +166,17 @@ sticks = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
 locked_points = [0]
 swing = Entity(points, points, sticks, locked_points)
 
+# Make stick man
+points = [(50, 900), (75, 850), (100, 900), (75, 800), (30, 800), (120, 800),
+          (75, 790), (60, 790), (60, 760), (90, 760), (90, 790)]
+sticks = [(0, 1), (1, 2), (1,3), (3, 4), (3, 5), (3, 6), (6, 7), (7,8), (8, 9),
+         (9, 10), (6,8), (6,9), (6,10)]
+old_points = [(X-15, Y+15) for (X, Y) in points]
+locked_points = []
+man = Entity(points, old_points, sticks, locked_points)
+
 # Set up the Environment
-my_environment = Environment((900, 900), [swing])
+my_environment = Environment((900, 900), [swing, man])
 
 running = True
 while running:
