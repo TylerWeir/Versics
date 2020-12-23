@@ -77,7 +77,7 @@ class Entity():
     def satisfy_contraints(self, bounds):
         # 1 = perfectly elastic collision
         # 0 = perfectly inelastic collision
-        bounce = 0.1
+        bounce = 0.25
 
         # Number of iterations to satisfy contraints
         for j in range(1):
@@ -143,6 +143,19 @@ class Entity():
 
         return canvas
 
+    def make_square(self, pos, size):
+        """Returns a rigid square entity."""
+        pass
+
+    def make_rope(self, pos, size):
+        """Returns a rope-like entity."""
+        pass
+
+    def make_cloth(self, pos, size):
+        """Returns a cloth like entity."""
+        pass
+
+
 
 # Test program ########################################################
 pygame.init()
@@ -175,8 +188,15 @@ old_points = [(X-15, Y+15) for (X, Y) in points]
 locked_points = []
 man = Entity(points, old_points, sticks, locked_points)
 
+# Make free point
+points = [(100, 100)]
+old_points = [(80, 110)]
+sticks=[]
+locked_points=[]
+dot = Entity(points, old_points, sticks, locked_points)
+
 # Set up the Environment
-my_environment = Environment((900, 900), [swing, man])
+my_environment = Environment((900, 900), [swing, man, dot])
 
 running = True
 while running:
