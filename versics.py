@@ -14,7 +14,7 @@ from pygame.math import Vector2
 class Environment():
     """Represents the environment in which rigid body physics is simulated."""
 
-    def __init__(self, size, entities):
+    def __init__(self, size, entities=[]):
         self.size = Vector2(size)
         self.entities = entities
         self.dt = 1/60
@@ -155,7 +155,7 @@ class Entity():
         """Returns a cloth like entity."""
         pass
 
-
+"""
 
 # Test program ########################################################
 pygame.init()
@@ -224,3 +224,4 @@ while running:
     clock.tick(60)
 
 pygame.QUIT
+"""
