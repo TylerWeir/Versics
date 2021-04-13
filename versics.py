@@ -69,10 +69,10 @@ class Entity():
                 self.points[i] += temp - old_pos + a*(time_step**2)
                 self.old_points[i].update(temp)
 
-    def find_closest_point(self, position):
+    def find_closest_point_in_range(self, position, r):
         """Find the index of the point closest to a given position."""
         pos = Vector2(position) 
-        dist = 99999
+        dist = r
         index = -1 
 
         for i in range(len(self.points)):

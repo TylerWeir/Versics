@@ -59,11 +59,14 @@ class Program():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     x -= 200
-                    index = swing.find_closest_point((x,y))
-                    swing.force_pos(index, (x,y))
+                    index = swing.find_closest_point_in_range((x,y), 20)
+                    if index != -1:
+                        swing.force_pos(index, (x,y))
+                    
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    swing.free_point(index)
-                    index = -1
+                    if index != -1:
+                        swing.free_point(index)
+                        index = -1
 
             if index != -1:
                 x, y = pygame.mouse.get_pos()
