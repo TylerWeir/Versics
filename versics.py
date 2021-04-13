@@ -69,6 +69,20 @@ class Entity():
                 self.points[i] += temp - old_pos + a*(time_step**2)
                 self.old_points[i].update(temp)
 
+    def find_closest_point(self, position):
+        """Find the index of the point closest to a given position."""
+        pos = Vector2(position) 
+        dist = 99999
+        index = -1 
+
+        for i in range(len(self.points)):
+            distance = self.points[i].distance_to(pos)
+            if distance < dist:
+                dist = distance 
+                index = i
+             
+        return index
+
     def accumulate_forces(self):
         """Accumulates forces for each particle."""
     #    for force in self.forces:
@@ -80,7 +94,7 @@ class Entity():
         bounce = 0.25
 
         # Number of iterations to satisfy contraints
-        for j in range(1):
+        for j in range(6):
             for i in range(len(self.points)):
                 # Make bounces by reflecting the velocity at time of impact
                 # accross the wall. velocity is current pos - old pos.
@@ -155,73 +169,14 @@ class Entity():
         """Returns a cloth like entity."""
         pass
 
-"""
+    def force_pos(self, pointIndex, position):
+        """Forces a point to a given position."""
+        if self.locked_points.count(pointIndex) == 0:
+            self.locked_points.append(pointIndex)
 
-# Test program ########################################################
-pygame.init()
+        self.points[pointIndex].x = position[0]
+        self.points[pointIndex].y = position[1]
 
-# Screen setup
-pygame.display.set_caption("Verlet Physics Simulation")
-screen = pygame.display.set_mode((1000, 1000))
-background = pygame.Surface(screen.get_size())
-background.fill((0, 0, 0))
-
-# Clock to limit frame rate
-clock = pygame.time.Clock()
-
-# Set up the swing Entity
-points = [(450, 50), (480, 50), (510, 50), (540, 50), (570, 50), (600, 50),
-          (630, 50), (660, 50), (690, 50), (720, 50), (750, 30), (750, 70),
-          (790, 30), (790, 70)]
-sticks = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8),
-          (8, 9), (9, 10), (10, 11), (11, 9), (11, 13), (10, 12), (12, 13),
-          (10, 13)]
-locked_points = [0]
-swing = Entity(points, points, sticks, locked_points)
-
-# Make stick man
-points = [(50, 900), (75, 850), (100, 900), (75, 800), (30, 800), (120, 800),
-          (75, 790), (60, 790), (60, 760), (90, 760), (90, 790)]
-sticks = [(0, 1), (1, 2), (1,3), (3, 4), (3, 5), (3, 6), (6, 7), (7,8), (8, 9),
-         (9, 10), (6,8), (6,9), (6,10)]
-old_points = [(X-15, Y+15) for (X, Y) in points]
-locked_points = []
-man = Entity(points, old_points, sticks, locked_points)
-
-# Make free point
-points = [(100, 100)]
-old_points = [(80, 110)]
-sticks=[]
-locked_points=[]
-dot = Entity(points, old_points, sticks, locked_points)
-
-# Set up the Environment
-my_environment = Environment((900, 900), [swing, man, dot])
-
-running = True
-while running:
-    # Loops through the event queue.
-    for event in pygame.event.get():
-        # Quit if the user clicks the quit button.
-        if event.type == pygame.QUIT:
-            running = False
-        # Looks for a key pressed event.
-        elif event.type == pygame.KEYDOWN:
-            # Quit if the escape key is pressed.
-            if event.key == pygame.K_ESCAPE:
-                running = False
-
-    # Paint the background
-    screen.blit(background, (0, 0))
-
-    # update the environment
-    my_environment.time_step()
-
-    # draw the environment
-    screen.blit(my_environment.render(), (50, 50))
-
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.QUIT
-"""
+    def free_point(self, pointIndex):
+       """Unlocks a point for free movement."""
+       self.locked_points.remove(pointIndex)
