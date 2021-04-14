@@ -173,7 +173,8 @@ class Entity():
         """Forces a point to a given position."""
         if self.locked_points.count(pointIndex) == 0:
             self.locked_points.append(pointIndex)
-
+        self.old_points[pointIndex].x = self.points[pointIndex].x
+        self.old_points[pointIndex].y = self.points[pointIndex].y
         self.points[pointIndex].x = position[0]
         self.points[pointIndex].y = position[1]
 
