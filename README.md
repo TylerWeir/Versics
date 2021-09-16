@@ -4,13 +4,6 @@ A Verlet physics engine for Python.
 ## Todo
 Below is a list of things that need to be addressed
 
-### Class Layout
-The engine could be modified to have a environment class and an entity class. The environment class is where multiple bodies can coexist and interact with each other. It would also force users to have clearly described entities rather than being able to describe multiple bodies with a single list of points.
-
-It would be possible to freely add and remove entities from the environment object.
-
-Rigid body collisions would be much easier to detect with clear entity definitions.
-
 ### Collisions
 Currently there are no rigid body collisions, only a constraint to keep bodies within the given bounds. Collisions will become much easier with the class layout described above.  The world class will likely be the one to contain the code for the collision handling.  
 
