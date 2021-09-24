@@ -40,6 +40,31 @@ class Program():
         self.environment = Environment((800, 800))
 
         self.environment.add_entity(swing)
+    
+    def render_menu(self, surface):
+        # Render the title
+        title_font = pygame.font.Font('freesansbold.ttf', 32)
+        title = title_font.render('Versics', True, (0,250,0))
+        titleRect = title.get_rect()
+        titleRect.center = (100, 20)
+        surface.blit(title, titleRect)
+        
+        # Render the menu options
+        menu_options = ['p = pause', 'c = create', 'd = delete', 's = save', 'q = quit']
+        menu_font = pygame.font.Font('freesansbold.ttf', 20)
+        
+        for i, option in enumerate(menu_options):
+            element = menu_font.render(f'{option}', True, (0,250,0))
+            element_rect = element.get_rect()
+            element_rect.center = (100, 60+40*i)
+            surface.blit(element, element_rect)
+        
+        
+        # Render the author's name
+        author = menu_font.render('Tyler Weir', True, (0, 250, 0))
+        author_rect = author.get_rect()
+        author_rect.center = (100, 780)
+        surface.blit(author, author_rect)
 
     def main_loop(self):
         running = True
@@ -74,6 +99,9 @@ class Program():
 
             # Paint the background
             self.screen.blit(self.background, (0,0))
+
+            # Paint the menu
+            self.render_menu(self.screen)
             
             # Update the environment
             self.environment.time_step()
