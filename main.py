@@ -65,7 +65,63 @@ class Program():
         author_rect = author.get_rect()
         author_rect.center = (100, 780)
         surface.blit(author, author_rect)
+    
+    def render_create_menu(self, surface):
+         # Render the title
+        title_font = pygame.font.Font('freesansbold.ttf', 32)
+        title = title_font.render('Versics', True, (0,250,0))
+        titleRect = title.get_rect()
+        titleRect.center = (100, 20)
+        surface.blit(title, titleRect)
+        
+        # Render the menu options
+        menu_options = ['esc = normal mode', 'option 1', 'option 2', 'option 3', 'option 4']
+        menu_font = pygame.font.Font('freesansbold.ttf', 20)
+        
+        for i, option in enumerate(menu_options):
+            element = menu_font.render(f'{option}', True, (0,250,0))
+            element_rect = element.get_rect()
+            element_rect.center = (100, 60+40*i)
+            surface.blit(element, element_rect)
+        
+        
+        # Render the author's name
+        author = menu_font.render('Tyler Weir', True, (0, 250, 0))
+        author_rect = author.get_rect()
+        author_rect.center = (100, 780)
+        surface.blit(author, author_rect)
 
+    def create_loop(self):
+        creating = True
+
+        while creating:
+            # Loops through the event queue.
+            for event in pygame.event.get():
+                # Quit if the user clicks exit
+                if event.type == pygame.QUIT:
+                    creating = False 
+                # Looks for a key pressed event.
+                elif event.type == pygame.KEYDOWN:
+                    # Quit if the escape key is pressed.
+                    if event.key == pygame.K_ESCAPE:
+                        creating = False
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    # If the user presses the releases the left mouse button.
+                    x, y = event.pos
+                    x -= 200
+                    
+
+            # Paint the background
+            
+            self.screen.blit(self.background, (0,0))
+
+            # Paint the menu
+            self.render_create_menu(self.screen)
+            
+            pygame.display.flip()
+            self.clock.tick(60)
+
+        
     def main_loop(self):
         running = True
         index = -1
@@ -81,6 +137,8 @@ class Program():
                     # Quit if the escape key is pressed.
                     if event.key == pygame.K_ESCAPE:
                         running = False
+                    if event.key == pygame.K_c:
+                        self.create_loop();
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     x -= 200
