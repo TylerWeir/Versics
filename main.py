@@ -152,7 +152,8 @@ class Program():
     def main_loop(self):
         running = True
         index = -1
-        min_dist
+        min_dist = 0
+        holding = None
 
         while running:
             # Loops through the event queue.
@@ -171,18 +172,20 @@ class Program():
                     x, y = event.pos
                     x -= 200
                     # TODO: This needs to be updated to look across all points. 
-                    index = swing.find_closest_point_in_range((x,y), 20)[0]
+                    closest = self.environment.get_closest_point((x,y), 20)
+                    index = closest[1] 
                     if index != -1:
-                        swing.force_pos(index, (x,y))
-                    
+                        holding = closest[0]
+                        closest[0].force_pos(index, (x,y))
+                  
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if index != -1:
-                        swing.free_point(index)
+                        holding.free_point(index)
                         index = -1
 
             if index != -1:
                 x, y = pygame.mouse.get_pos()
-                swing.force_pos(index, (x-200, y))
+                holding.force_pos(index, (x-200, y))
 
             # Paint the background
             self.screen.blit(self.background, (0,0))

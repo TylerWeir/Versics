@@ -28,6 +28,20 @@ class Environment():
             entity.verlet(self.dt)
             entity.satisfy_contraints(self.size)
 
+    def get_closest_point(self, pos, dist):
+        min_dist = dist
+        index = -1 
+        closestEntity = None
+
+        for entity in self.entities:
+            closest_point = entity.find_closest_point_in_range(pos, min_dist) 
+            if closest_point[0] != -1:
+                closestEntity = entity
+                index = closest_point[0]     
+                min_dist = closest_point[1]
+
+        return (closestEntity, index)
+
     def render(self):
         """Renders the environment and it's entities to the screen."""
         #Surface to do all the drawing to
