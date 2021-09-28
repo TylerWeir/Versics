@@ -59,6 +59,10 @@ class Entity():
     def add_point(self, pos=(0,0)):
         self.points.append(Vector2(pos))
         self.old_points.append(Vector2(pos))
+    
+    def add_stick(self, index1, index2):
+        distance = self.points[index1].distance_to(self.points[index2])
+        self.sticks.append((index1, index2, distance))
 
 
     def verlet(self, time_step):
@@ -85,7 +89,9 @@ class Entity():
                 dist = distance 
                 index = i
              
-        return index
+        # Return the index and the distance so this can be compared accross
+        # multiple entities
+        return (index, dist)
 
     def accumulate_forces(self):
         """Accumulates forces for each particle."""

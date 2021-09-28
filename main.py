@@ -106,6 +106,8 @@ class Program():
         newEntity = Entity(points, points, sticks, locked_points)
         self.environment.add_entity(newEntity)
 
+        selected_points = []
+
         while creating:
             # Loops through the event queue.
             for event in pygame.event.get():
@@ -117,12 +119,22 @@ class Program():
                     # Quit if the escape key is pressed.
                     if event.key == pygame.K_ESCAPE:
                         creating = False
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    # If the user presses the releases the left mouse button.
-                    x, y = event.pos
-                    x -= 200
-                    print('adding point')
-                    newEntity.add_point((x,y))
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        # Pressed the left button
+                        x, y = event.pos
+                        x -= 200
+                        print('adding point')
+                        newEntity.add_point((x,y))
+                    elif event.button == 3:
+                        # Pressed the right button
+                        x, y = event.pos
+                        x -= 200
+                        selected_points.append(newEntity.find_closest_point_in_range((x,y), 20)[0])
+            
+            if len(selected_points) >= 2:
+                print(selected_points)
+                newEntity.add_stick(selected_points.pop(), selected_points.pop())
 
             # Paint the background
             self.screen.blit(self.background, (0,0))
@@ -140,6 +152,7 @@ class Program():
     def main_loop(self):
         running = True
         index = -1
+        min_dist
 
         while running:
             # Loops through the event queue.
@@ -157,7 +170,8 @@ class Program():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     x -= 200
-                    index = swing.find_closest_point_in_range((x,y), 20)
+                    # TODO: This needs to be updated to look across all points. 
+                    index = swing.find_closest_point_in_range((x,y), 20)[0]
                     if index != -1:
                         swing.force_pos(index, (x,y))
                     
