@@ -31,7 +31,7 @@ class Program():
         pygame.display.set_caption("Interactive Physics")
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.background = pygame.Surface(self.screen.get_size())
-        self.background.fill((26, 29, 29))
+        self.background.fill((28, 28, 28))
 
         # Clock to limit the frame rate
         self.clock = pygame.time.Clock()
@@ -66,6 +66,12 @@ class Program():
         author_rect.center = (100, 780)
         surface.blit(author, author_rect)
     
+    def render_create_canvas(self, surface):
+        canvas = pygame.Surface((800, 800))  
+        canvas.fill((0,0,0))
+        surface.blit(canvas, (200,0)) 
+            
+    
     def render_create_menu(self, surface):
          # Render the title
         title_font = pygame.font.Font('freesansbold.ttf', 32)
@@ -75,7 +81,7 @@ class Program():
         surface.blit(title, titleRect)
         
         # Render the menu options
-        menu_options = ['esc = normal mode', 'option 1', 'option 2', 'option 3', 'option 4']
+        menu_options = ['esc = normal mode', 'n = new entity', 'option 2', 'option 3', 'option 4']
         menu_font = pygame.font.Font('freesansbold.ttf', 20)
         
         for i, option in enumerate(menu_options):
@@ -93,6 +99,12 @@ class Program():
 
     def create_loop(self):
         creating = True
+        
+        points = []
+        sticks = []
+        locked_points = []
+        newEntity = Entity(points, points, sticks, locked_points)
+        self.environment.add_entity(newEntity)
 
         while creating:
             # Loops through the event queue.
@@ -109,15 +121,18 @@ class Program():
                     # If the user presses the releases the left mouse button.
                     x, y = event.pos
                     x -= 200
-                    
+                    print('adding point')
+                    newEntity.add_point((x,y))
 
             # Paint the background
-            
             self.screen.blit(self.background, (0,0))
 
             # Paint the menu
             self.render_create_menu(self.screen)
-            
+        
+            # Paint the environment
+            self.screen.blit(self.environment.render(), (200, 0))
+
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -138,7 +153,7 @@ class Program():
                     if event.key == pygame.K_ESCAPE:
                         running = False
                     if event.key == pygame.K_c:
-                        self.create_loop();
+                        self.create_loop()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     x -= 200

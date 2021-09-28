@@ -56,6 +56,10 @@ class Entity():
 
         self.gravity = Vector2((0, 5.0))  # Should be an environmental force
 
+    def add_point(self, pos=(0,0)):
+        self.points.append(Vector2(pos))
+        self.old_points.append(Vector2(pos))
+
 
     def verlet(self, time_step):
         """Verlet integration step."""
@@ -91,7 +95,7 @@ class Entity():
     def satisfy_contraints(self, bounds):
         # 1 = perfectly elastic collision
         # 0 = perfectly inelastic collision
-        bounce = 0.25
+        bounce = 0.9 
 
         # Number of iterations to satisfy contraints
         for j in range(6):
