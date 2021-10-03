@@ -50,7 +50,7 @@ class Program():
         surface.blit(title, titleRect)
         
         # Render the menu options
-        menu_options = ['p = pause', 'c = create', 'd = delete', 's = save', 'q = quit']
+        menu_options = ['c = create', 'q = quit']
         menu_font = pygame.font.Font('freesansbold.ttf', 20)
         
         for i, option in enumerate(menu_options):
@@ -81,7 +81,7 @@ class Program():
         surface.blit(title, titleRect)
         
         # Render the menu options
-        menu_options = ['esc = normal mode', 'n = new entity', 'option 2', 'option 3', 'option 4']
+        menu_options = ['f = finish', 'x = cancel']
         menu_font = pygame.font.Font('freesansbold.ttf', 20)
         
         for i, option in enumerate(menu_options):
@@ -117,8 +117,11 @@ class Program():
                 # Looks for a key pressed event.
                 elif event.type == pygame.KEYDOWN:
                     # Quit if the escape key is pressed.
-                    if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_f:
                         creating = False
+                    if event.key == pygame.K_x:
+                        creating = False
+                        self.environment.pop_entity()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         # Pressed the left button
@@ -165,6 +168,8 @@ class Program():
                 elif event.type == pygame.KEYDOWN:
                     # Quit if the escape key is pressed.
                     if event.key == pygame.K_ESCAPE:
+                        running = False
+                    if event.key == pygame.K_q:
                         running = False
                     if event.key == pygame.K_c:
                         self.create_loop()

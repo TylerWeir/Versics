@@ -23,6 +23,10 @@ class Environment():
         """Adds a body to the simulation."""
         self.entities.append(entity)
 
+    def pop_entity(self):
+        """Removes the last added entity."""
+        self.entities.pop()
+
     def time_step(self):
         for entity in self.entities:
             entity.verlet(self.dt)
