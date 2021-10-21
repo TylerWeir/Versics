@@ -5,7 +5,7 @@
 
 import pygame
 import pygame.mouse
-from versics import Entity, Environment
+from versics import Entity, Environmentsu
 
 # Set up the swing Entity
 points = [(450, 50), (480, 50), (510, 50), (540, 50), (570, 50), (600, 50),
@@ -18,7 +18,7 @@ locked_points = [0]
 swing = Entity(points, points, sticks, locked_points)
 
 
-class Program():
+class Program()::
     """An interactive physics progam."""
     
     def __init__(self):
