@@ -120,7 +120,7 @@ class Entity():
         # 1 = perfectly elastic collision
         # 0 = perfectly inelastic collision
         bounce = 0.9 
-        friction = 0.1
+        friction = 0.001
 
         # Number of iterations to satisfy contraints
         for j in range(6):
@@ -132,23 +132,42 @@ class Entity():
 
                 # x bounce
                 if self.points[i].x >= bounds.x:
-                    diff = self.points[i].x - self.old_points[i].x * (1-friction)
+                    diff = self.points[i].x - self.old_points[i].x
                     self.points[i].x = bounds.x
                     self.old_points[i].x = self.points[i].x+diff*bounce
+                    
+                    # y friction
+                    diff = self.points[i].y - self.old_points[i].y 
+                    self.old_points[i].y = self.points[i].y+diff * (1-friction)
+
                 if self.points[i].x <= 0:
-                    diff = self.points[i].x - self.old_points[i].x * (1-friction)
+                    diff = self.points[i].x - self.old_points[i].x
                     self.points[i].x = 0
                     self.old_points[i].x = self.points[i].x + diff*bounce
 
+                    # y friction
+                    diff = self.points[i].y - self.old_points[i].y 
+                    self.old_points[i].y = self.points[i].y+diff * (1-friction)
+
                 # y bounces
                 if self.points[i].y >= bounds.y:
-                    diff = self.points[i].y - self.old_points[i].y * (1-friction)
+                    diff = self.points[i].y - self.old_points[i].y 
                     self.points[i].y = bounds.y
                     self.old_points[i].y = self.points[i].y+diff*bounce
+
+                    # x friction
+                    diff = self.points[i].x - self.old_points[i].x
+                    self.old_points[i].x = self.points[i].x+diff * (1-friction)
+                    
+
                 if self.points[i].y <= 0:
-                    diff = self.points[i].y - self.old_points[i].y * (1-friction)
+                    diff = self.points[i].y - self.old_points[i].y
                     self.points[i].y = 0
                     self.old_points[i].y = self.points[i].y+diff*bounce
+
+                    # x friction
+                    diff = self.points[i].x - self.old_points[i].x
+                    self.old_points[i].x = self.points[i].x+diff * (1-friction)
 
                 # Stick contstraint
                 for stick in self.sticks:
