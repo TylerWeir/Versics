@@ -4,9 +4,6 @@ A Verlet physics engine for Python.
 ## Todo
 Below is a list of things that need to be addressed
 
-### Friction
-Need to add friction force when nodes are in contact with the bounds of the environment. 
-
 ### Collisions
 Currently there are no rigid body collisions, only a constraint to keep bodies within the given bounds. Collisions will become much easier with the class layout described above.  The world class will likely be the one to contain the code for the collision handling.  
 
